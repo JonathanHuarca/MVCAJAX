@@ -1,0 +1,115 @@
+﻿@model List<MVCAJAX.Models.StudentModel>
+@{
+    ViewBag.Title = "IndexRazor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-md-12">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">Please enter the details below</h3>
+        </div>
+        <div class="panel-body">
+            <div class="form-group col-md-5">
+                <label>Student Name</label>
+                <input type="text" name="StudentName" id="StudentName" class="form-control" placeholder="Enter Student Name" required="" />
+            </div>
+            <div class="form-group col-md-5">
+                <label>Student Addreess</label>
+                <input type="text" name="StudentAddress" id="StudentAddress" class="form-control" placeholder="Enter Student Address" required="" />
+            </div>
+
+            <div class="form-group col-md-1">
+                <div style="float: right; display:inline-block;">
+                    <input class="btn btn-primary" name="submitButton" id="btnSave" value="Save" type="button">
+                </div>
+            </div>
+        </div>
+    </div><hr />
+    <table id="tblStudent" class="table table-bordered table-striped table-responsive table-hover">
+        <thead>
+            <tr>
+                <th align="left" class="productth">ID</th>
+                <th align="left" class="productth">Name</th>
+                <th align="left" class="productth">Address</th>
+                <th align="left" class="productth">LastName</th>
+                <th align="left" class="productth">Código</th>
+                <th align="left" class="productth">Fecha Creación</th>
+                <th align="left" class="productth">Fecha Modificación</th>
+                <th align="left" class="productth">Actividad</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var item in Model)
+            {
+            <tr>
+                <td align="left" class="productth">@item.studentID</td>
+                <td align="left" class="productth">@item.studentName</td>
+                <td align="left" class="productth">@item.studentAddress</td>
+                <td align="left" class="productth">@item.LastName</td>
+                <td align="left" class="productth">@item.Codigo</td>
+                <td align="left" class="productth">@item.FechaCreacion</td>
+                <td align="left" class="productth">@item.FechaModificacion</td>
+                <td><button value="Eliminar" title="Eliminar" class="btn btn-danger btn-delete"></td>
+       
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts
+{
+    <script type="text/javascript">
+        $(function () {
+          //  LoadData();
+            $("#btnSave").click(function () {
+                var std = {};
+                std.StudentName = $("#StudentName").val();
+                std.StudentAddress = $("#StudentAddress").val();
+                $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("createStudent")',
+                    data: '{std: ' + JSON.stringify(std) + '}',
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function () {
+                        LoadData();
+                    },
+                    error: function () {
+                        alert("Error while inserting data");
+                    }
+                });
+                return false;
+            });
+        });
+
+        function LoadData() {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("getStudent")',
+                dataType: 'json',
+                data: { id: '' },
+                success: function (data) {
+                    var items = '';
+                    $.each(data, function (i, item) {
+                        var rows = "<tr>"
+                            + "<td class='prtoducttd'>" + item.studentID + "</td>"
+                            + "<td class='prtoducttd'>" + item.StudentName + "</td>"
+                            + "<td class='prtoducttd'>" + item.StudentAddress + "<td>"
+                            + "</tr>";
+                        $('#tblStudent tbody').append(rows);
+                    });
+                },
+                error: function (ex) {
+                    var r = jQuery.parseJSON(response.responseText);
+                    alert("Message: " + r.Message);
+                    alert("StackTrace: " + r.StackTrace);
+                    alert("ExceptionType: " + r.ExceptionType);
+                }
+            });
+            return false;
+        }
+    </script>
+}

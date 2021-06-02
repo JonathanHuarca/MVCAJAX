@@ -1,0 +1,290 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style type="text/css">
+
+
+    .boton_mostrar {
+        float: right;
+        font-size: 12px;
+        line-height: 20px;
+        color: #ffffff;
+        padding: 5px;
+    }
+
+    /* mPopup box style */
+.mpopup {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+}
+.mpopup-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0;
+    width: 60%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    -webkit-animation-name: animatetop;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatetop;
+    animation-duration: 0.4s
+}
+
+.mpopup-head {
+    padding: 2px 16px;
+    background-color: #ff0000;
+    color: white;
+}
+.mpopup-main {padding: 2px 16px;}
+.mpopup-main input[type="text"]{
+    width: 30%;
+    height: 25px;
+    font-size: 15px;
+}
+.mpopup-main input[type="submit"]{
+    padding: 5px;
+    font-size: 15px;
+    font-weight: bold;
+    background-color: #333;
+    outline: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+}
+.mpopup-foot {
+    padding: 2px 16px;
+    background-color: #ff0000;
+    color: #ffffff;
+}
+
+
+/* close button style */
+.close {
+    color: white;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+.close:hover, .close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+</style>
+<div class="col-md-12">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Información adicional
+            <a style='cursor: pointer;' onClick="muestra_oculta('contenido')" title="" class="boton_mostrar">SAVE</a>
+            <a style='cursor: pointer;' onClick="subscriptionPopup()" title="" class="boton_mostrar">SAVE2</a>
+        </div>
+        <!--<select id="select" name="select">
+        <option value="">Seleccione</option>
+        <option value="div1">Div 1</option>
+        <option value="div2">Div 2</option>
+    </select>-->
+
+
+
+        <div id="contenido" class="panel-body">
+            <div class="form-group col-md-5">
+                <label>Student Name</label>
+                <input type="text" name="StudentName" id="StudentName" class="form-control" placeholder="Enter Student Name" required="" />
+            </div>
+            <div class="form-group col-md-5">
+                <label>Student Addreess</label>
+                <input type="text" name="StudentAddress" id="StudentAddress" class="form-control" placeholder="Enter Student Address" required="" />
+            </div>
+
+            <div class="form-group col-md-1">
+                <div style="float: right; display:inline-block;">
+                    <input class="btn btn-primary" name="submitButton" id="btnSave" value="Save" type="button">
+                </div>
+            </div>
+        </div>
+        
+
+    </div><hr />
+              <table id="tblStudent" class="table table-bordered table-striped table-responsive table-hover">
+                  <thead>
+                      <tr>
+                          <th align="left" class="productth">ID</th>
+                          <th align="left" class="productth">Name</th>
+                          <th align="left" class="productth">Address</th>
+                          <th align="left" class="productth">LastName</th>
+                          <th align="left" class="productth">Código</th>
+                          <th align="left" class="productth">Fecha Creación</th>
+                          <th align="left" class="productth">Fecaha Modificación</th>
+                          <th align="left" class="productth">Actividad</th>
+                      </tr>
+                  </thead>
+                  <tbody></tbody>
+              </table>
+    </div>
+
+    <div id="mpopupBox" class="mpopup">
+        <!-- mPopup content -->
+        <div class="mpopup-content">
+            <div class="mpopup-head">
+                <span class="close">×</span>
+                <h2>Actualizar datos de Alumnos</h2>
+            </div>
+            <div class="mpopup-main">
+                <p><input type="text" id="StudentName" placeholder="Intgrese su Nombre" /></p>
+            </div>
+            <div class="mpopup-main">
+                <p><input type="text" id="StudentLastName" placeholder="Ingrese su Apellido" /></p>
+            </div>
+            <div class="mpopup-main">
+                <p><input type="text" id="StudentAddress" placeholder="Ingrese su Dirección" /></p>
+            </div>
+            <div class="mpopup-main">
+                <p><input type="text" id="StudentCodigo" placeholder="Ingrese su código" /></p>
+            </div>
+            <div class="mpopup-main">
+                <p><input type="text" id="StudentFechaInicio" placeholder="Ingrese fecha inicio" /></p>
+            </div>
+            <div class="mpopup-main">
+                <p><input type="text" id="StudentFechaFinal" placeholder="Ingrese fecha fin" /></p>
+            </div>
+            <div style="float: right; display:inline-block;">
+                <input class="btn btn-primary" name="submitButton" id="btnSave" value="Save" type="button">
+            </div>
+            <div class="mpopup-foot">
+                <p>created by CodexWorld</p>
+            </div>
+        </div>
+</div>
+    @section Scripts
+    {
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#select').on('change', function () {
+                    var selectValor = '#' + $(this).val();
+                    $('#pai').children('div').hide();
+                    $('#pai').children(selectValor).show();
+                });
+            });
+
+            function muestra_oculta(id) {
+
+                if (document.getElementById) { //se obtiene el id
+                    var el = document.getElementById(id); //se define la variable "el" igual a nuestro div
+                    el.style.display = (el.style.display == 'none') ? 'block' : 'none'; //damos un atributo display:none que oculta el div
+                }
+            }
+            window.onload = function () {/*hace que se cargue la función lo que predetermina que div estará oculto hasta llamar a la función nuevamente*/
+               
+                    muestra_oculta('contenido');/* "contenido_a_mostrar" es el nombre que le dimos al DIV */
+               
+            };
+
+            $(function () {
+                LoadData();
+                $("#btnSave").click(function () {
+                    var std = {};
+                    std.studentName = $("#StudentName").val();
+                    std.studentAddress = $("#StudentAddress").val();
+                    std.LastName = $("#StudentLastName").val();
+                    std.Codigo = $("#StudentCodigo").val();
+                    std.FechaCreacion = $("#StudentFechaInicio").val();
+                    std.FechaModificacion = $("#StudentFechaFinal").val();
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("createStudent")',
+                        data: '{std: ' + JSON.stringify(std) + '}',
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function () {
+                            LoadData();
+                        },
+                        error: function () {
+                            alert("Error while inserting data");
+                        }
+                    });
+                    return false;
+                });
+            });
+
+            function LoadData() {
+                $("#tblStudent tbody tr").remove();
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("getStudent")',
+                    dataType: 'json',
+                    data: { id: '' },
+                    success: function (data) {
+                        var items = '';
+                        $.each(data, function (i, item) {
+                            var rows = "<tr>"
+                                + "<td class='prtoducttd'>" + item.studentID + "</td>"
+                                + "<td class='prtoducttd'>" + item.studentName + "</td>"
+                                + "<td class='prtoducttd'>" + item.studentAddress + "</td>"
+                                + "<td class='prtoducttd'>" + item.LastName + "</td>"
+                                + "<td class='prtoducttd'>" + item.Codigo + "</td>"
+                                + "<td class='prtoducttd'>" + item.FechaCreacion + "</td>"
+                                + "<td class='prtoducttd'>" + item.FechaModificacion + "</td>"
+                                + "<td class='prtoducttd'>" + `<a href=' <%= Url.Action("Edit", new { id=item.Id }) %>' class="btn btn-primary btn-edit">Editar</a>` + `<a href=' <%= Url.Action("Eliminar", new { id=item.Id }) %>' class="btn btn-danger btn-delete">Eliminar</a>`+"</td>"
+                                + "</tr>";
+                            $('#tblStudent tbody').append(rows);
+                        });
+                    },
+                    error: function (ex) {
+                        var r = jQuery.parseJSON(response.responseText);
+                        alert("Message: " + r.Message);
+                        alert("StackTrace: " + r.StackTrace);
+                        alert("ExceptionType: " + r.ExceptionType);
+                    }
+                });
+                return false;
+            }
+
+            function subscriptionPopup() {
+                // get the mPopup
+                var mpopup = $('#mpopupBox');
+
+                // open the mPopup
+                mpopup.show();
+
+                // close the mPopup once close element is clicked
+                $(".close").on('click', function () {
+                    mpopup.hide();
+                });
+
+                // close the mPopup when user clicks outside of the box
+                $(window).on('click', function (e) {
+                    if (e.target == mpopup[0]) {
+                        mpopup.hide();
+                    }
+                });
+            }
+
+            $(document).ready(function () {
+                var popDisplayed = $.cookie('popDisplayed');
+                if (popDisplayed == '1') {
+                    return false;
+                } else {
+                    setTimeout(function () {
+                        subscriptionPopup();
+                    }, 10000);
+                    $.cookie('popDisplayed', '1', { expires: 7 });
+                }
+            });
+
+        </script>
+    }
+

@@ -1,0 +1,174 @@
+﻿
+@{
+    ViewBag.Title = "searchStudent";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style type="text/css">
+
+
+    .boton_mostrar {
+        float: right;
+        font-size: 12px;
+        line-height: 20px;
+        color: #ffffff;
+        padding: 5px;
+    }
+</style>
+<div class="col-md-12">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Información adicional
+            <a style='cursor: pointer;' onClick="muestra_oculta('contenido')" title="" class="boton_mostrar">Search</a>
+        </div>
+        <!--<select id="select" name="select">
+            <option value="">Seleccione</option>
+            <option value="div1">Div 1</option>
+            <option value="div2">Div 2</option>
+        </select>-->
+
+
+
+        <div id="contenido" class="panel-body">
+            <div class="form-group col-md-5">
+                <label>Student Name</label>
+                <input type="text" name="StudentName" id="StudentName" class="form-control" placeholder="Enter Student Name" required="" />
+            </div>
+            <div class="form-group col-md-5">
+                <label>Student Addreess</label>
+                <input type="text" name="LastName" id="LastName" class="form-control" placeholder="Enter Student LastName" required="" />
+            </div>
+
+            <div class="form-group col-md-1">
+                <div style="float: right; display:inline-block;">
+                    <input class="btn btn-primary" name="submitButton" id="btnSearch" value="Search" type="button">
+                </div>
+            </div>
+        </div>
+
+
+    </div><hr />
+    <table id="tblStudent" class="table table-bordered table-striped table-responsive table-hover">
+        <thead>
+            <tr>
+                <th align="left" class="productth">ID</th>
+                <th align="left" class="productth">Name</th>
+                <th align="left" class="productth">Address</th>
+                <th align="left" class="productth">LastName</th>
+                <th align="left" class="productth">Código</th>
+                <th align="left" class="productth">Fecha Creación</th>
+                <th align="left" class="productth">Fecaha Modificación</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+@section Scripts
+    {
+    <script type="text/javascript">
+            $(document).ready(function () {
+                $('#select').on('change', function () {
+                    var selectValor = '#' + $(this).val();
+                    $('#pai').children('div').hide();
+                    $('#pai').children(selectValor).show();
+                });
+            });
+
+            function muestra_oculta(id) {
+
+                if (document.getElementById) { //se obtiene el id
+                    var el = document.getElementById(id); //se define la variable "el" igual a nuestro div
+                    el.style.display = (el.style.display == 'none') ? 'block' : 'none'; //damos un atributo display:none que oculta el div
+                }
+            }
+            window.onload = function () {/*hace que se cargue la función lo que predetermina que div estará oculto hasta llamar a la función nuevamente*/
+
+                    muestra_oculta('contenido');/* "contenido_a_mostrar" es el nombre que le dimos al DIV */
+
+            };
+
+            $(function () {
+                LoadData();
+                $("#btnSave").click(function () {
+                    var std = {};
+                    std.StudentName = $("#StudentName").val();
+                    std.StudentAddress = $("#StudentAddress").val();
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("createStudent")',
+                        data: '{std: ' + JSON.stringify(std) + '}',
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function () {
+                            LoadData();
+                        },
+                        error: function () {
+                            alert("Error while inserting data");
+                        }
+                    });
+                    return false;
+                });
+
+                $("#btnSearch").click(function () {
+                    $.ajax({
+                        type: "GET",
+                        url: '@Url.Action("getStudentWithFilter")' + '?name=' + $("#StudentName").val(),
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            $("#tblStudent tbody tr").remove();
+                            var items = '';
+                            $.each(data, function (i, item) {
+                                var rows = "<tr>"
+                                    + "<td class='prtoducttd'>" + item.studentID + "</td>"
+                                    + "<td class='prtoducttd'>" + item.studentName + "</td>"
+                                    + "<td class='prtoducttd'>" + item.studentAddress + "</td>"
+                                    + "<td class='prtoducttd'>" + item.LastName + "</td>"
+                                    + "<td class='prtoducttd'>" + item.Codigo + "</td>"
+                                    + "<td class='prtoducttd'>" + item.FechaCreacion + "</td>"
+                                    + "<td class='prtoducttd'>" + item.FechaModificacion + "</td>"
+                                    + "</tr>";
+                                $('#tblStudent tbody').append(rows);
+                            });
+                        }
+
+                    })
+                })
+            });
+
+
+            function LoadData() {
+                $("#tblStudent tbody tr").remove();
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("getStudent")',
+                    dataType: 'json',
+                    data: { id: '' },
+                    success: function (data) {
+                        var items = '';
+                        $.each(data, function (i, item) {
+                            var rows = "<tr>"
+                                + "<td class='prtoducttd'>" + item.studentID + "</td>"
+                                + "<td class='prtoducttd'>" + item.studentName + "</td>"
+                                + "<td class='prtoducttd'>" + item.studentAddress + "</td>"
+                                + "<td class='prtoducttd'>" + item.LastName + "</td>"
+                                + "<td class='prtoducttd'>" + item.Codigo + "</td>"
+                                + "<td class='prtoducttd'>" + item.FechaCreacion + "</td>"
+                                + "<td class='prtoducttd'>" + item.FechaModificacion + "</td>"
+                                + "</tr>";
+                            $('#tblStudent tbody').append(rows);
+                        });
+                    },
+                    error: function (ex) {
+                        var r = jQuery.parseJSON(response.responseText);
+                        alert("Message: " + r.Message);
+                        alert("StackTrace: " + r.StackTrace);
+                        alert("ExceptionType: " + r.ExceptionType);
+                    }
+                });
+                return false;
+            }
+    </script>
+}
+
