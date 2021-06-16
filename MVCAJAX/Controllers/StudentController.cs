@@ -6,63 +6,40 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using DOMAIN;
-using SERVICE;
 using System.Web.Mvc;
-using INFRAESTRUCTURE;
 using MVCAJAX.Models;
+using System.Threading.Tasks;
 
 namespace MVCAJAX.Controllers
 {
     public class StudentController : Controller
     {
-        private StudentService service = new StudentService();
+        Proxy.StudentProxy proxy = new Proxy.StudentProxy();
+
 
         public ActionResult IndexRazor()
         {
+            var response = Task.Run(() => proxy.GetStudentsAsync());
+            return View(response.Result.listado);
+        }
 
-            var model = (from c in service.Get()
-                         select new StudentModel
-                         {
-                             studentID = c.studentID,
-                             studentAddress = c.studentAddress,
-                             studentName = c.studentName,
-                             LastName = c.LastName,
-                             Codigo=c.Codigo,
-                             FechaCreacion = c.FechaCreacion,
-                             FechaModificacion = c.FechaModificacion
+        public JsonResult getStudent(string id)
+        {
+            var response = Task.Run(() => proxy.GetStudentsAsync());
+            return Json(response.Result.listado, JsonRequestBehavior.AllowGet);
+        }
 
-                         }).ToList();
-
-            return View(model);
+        [HttpPost]
+        public ActionResult createStudent(StudentModel std)
+        {
+            var response = Task.Run(() => proxy.InsertAsync(std));
+            string message = response.Result.Mensaje;
+            return Json(new { Message = message, JsonRequestBehavior.AllowGet });
         }
 
         public ActionResult Index()
         {
             return View();
-        }
-
-        public JsonResult getStudent(string id)
-        {
-            return Json(service.Get(), JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpPost]
-        public ActionResult createStudent(Student std)
-        {
-            service.Insert(std);
-            string message = "SUCCESS";
-            return Json(new { Message = message, JsonRequestBehavior.AllowGet });
-        }
-        public ActionResult searchStudent()
-        {
-            return View();
-        }
-
-        [HttpGet]
-        public JsonResult getStudentWithFilter(string name)
-        {
-            var students = service.GetSearch(name);
-            return Json(students, JsonRequestBehavior.AllowGet);
         }
 
     }
